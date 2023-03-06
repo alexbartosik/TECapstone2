@@ -42,7 +42,8 @@ namespace TenmoServer
 
             // Dependency Injection configuration
             string connectionString = Configuration.GetConnectionString("Project");
-            services.AddSingleton((Func<IServiceProvider, ITokenGenerator>)(sp => new JwtGenerator(jwtSecret)));
+            // What??? services.AddSingleton((Func<IServiceProvider, ITokenGenerator>)(sp => new JwtGenerator(jwtSecret)));
+            services.AddSingleton<ITokenGenerator>(sp => new JwtGenerator(jwtSecret));
             services.AddSingleton<IPasswordHasher>(sp => new PasswordHasher());
             services.AddSingleton<IUserDAO>(sp => new UserSqlDAO(connectionString));
         }
@@ -55,7 +56,7 @@ namespace TenmoServer
                 {
                     Version = "v1",
                     Title = "Tenmo Server",
-                    Description = "Tech Elevator's proprietary new money management system in no way related to other similarly named systems."
+                    Description = "Tech Elevator Review Day!"
                 });
             });
         }

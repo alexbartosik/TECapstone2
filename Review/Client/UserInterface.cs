@@ -26,7 +26,7 @@ namespace TenmoClient
 
         private void ShowLogInMenu()
         {
-            Console.WriteLine("Welcome to TEnmo!");
+            Console.WriteLine("Welcome to the TE City Manager!");
             Console.WriteLine("1: Login");
             Console.WriteLine("2: Register");
             Console.Write("Please choose an option: ");
@@ -55,13 +55,10 @@ namespace TenmoClient
             do
             {
                 Console.WriteLine();
-                Console.WriteLine("Welcome to TEnmo! Please make a selection: ");
-                Console.WriteLine("1: View your current balance");
-                Console.WriteLine("2: View your past transfers");
-                Console.WriteLine("3: View your pending requests");
-                Console.WriteLine("4: Send TE bucks");
-                Console.WriteLine("5: Request TE bucks");
-                Console.WriteLine("6: Log in as different user");
+                Console.WriteLine("Welcome to the TE City Manager! Please make a selection: ");
+                Console.WriteLine("1: View all cities");
+                Console.WriteLine("2: Add a new city");
+                Console.WriteLine("3: Log in as different user");
                 Console.WriteLine("0: Exit");
                 Console.WriteLine("---------");
                 Console.Write("Please choose an option: ");
@@ -74,27 +71,15 @@ namespace TenmoClient
                 {
                     switch (menuSelection)
                     {
-                        case 1: // View Balance
+                        case 1: // View All Cities
                             Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
                             break;
 
-                        case 2: // View Past Transfers
+                        case 2: // Add a New City
                             Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
                             break;
 
-                        case 3: // View Pending Requests
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
-                            break;
-
-                        case 4: // Send TE Bucks
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
-                            break;
-
-                        case 5: // Request TE Bucks
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
-                            break;
-
-                        case 6: // Log in as someone else
+                        case 3: // Log in as someone else
 
                             authService.ClearAuthenticator();
 
