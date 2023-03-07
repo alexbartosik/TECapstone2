@@ -26,7 +26,17 @@ namespace Server.DAO
             {
                 conn.Open();
 
-                string sql = "SELECT c.city_id, c.city_name, c.state_abbreviation, c.population, c.area, s.state_name, s.state_nickname FROM city c JOIN state s ON s.state_abbreviation = c.state_abbreviation ORDER BY s.state_name, c.city_name";
+                const string sql = "SELECT " +
+                                        "c.city_id, " +
+                                        "c.city_name, " +
+                                        "c.state_abbreviation, " +
+                                        "c.population, " +
+                                        "c.area, " +
+                                        "s.state_name, " +
+                                        "s.state_nickname " +
+                                    "FROM city c " +
+                                        "JOIN state s ON s.state_abbreviation = c.state_abbreviation " +
+                                    "ORDER BY s.state_name, c.city_name";
                 SqlCommand command = new SqlCommand(sql, conn);
                 SqlDataReader reader = command.ExecuteReader();
 

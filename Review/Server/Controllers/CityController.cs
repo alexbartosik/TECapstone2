@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Server.DAO;
 using Server.Models;
@@ -19,9 +20,10 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public IList<City> List()
+        [AllowAnonymous]
+        public ActionResult List()
         {
-            return dao.ListCities();
+            return Ok(dao.ListCities());
         }
     }
 }
