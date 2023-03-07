@@ -7,7 +7,7 @@ using System.Diagnostics.Eventing.Reader;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("city")]
     [ApiController]
     public class CityController : ControllerBase
     {

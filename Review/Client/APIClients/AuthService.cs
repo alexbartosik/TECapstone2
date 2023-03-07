@@ -12,7 +12,7 @@ namespace TenmoClient
     {
         private const string API_BASE_URL = "https://localhost:44315/";
         private readonly IRestClient client = new RestClient();
-
+        
         public bool IsLoggedIn
         {
             get
@@ -20,20 +20,23 @@ namespace TenmoClient
                 return client.Authenticator != null;
             }
         }
-
+        
+        public string Token { get; set; }
+        
         public void ClearAuthenticator()
         {
             client.Authenticator = null;
+            Token = null;
         }
-
+        
         //login endpoints
         public bool Register(LoginUser registerUser)
         {
             RestRequest request = new RestRequest(API_BASE_URL + "login/register");
             request.AddJsonBody(registerUser);
-
+            
             IRestResponse<API_User> response = client.Post<API_User>(request);
-
+            
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
                 Console.WriteLine("An error occurred communicating with the server.");
@@ -56,18 +59,18 @@ namespace TenmoClient
                 return true;
             }
         }
-
+        
         public API_User Login(LoginUser loginUser)
         {
             RestRequest request = new RestRequest(API_BASE_URL + "login");
             request.AddJsonBody(loginUser);
-
+            
             IRestResponse<API_User> response = client.Post<API_User>(request);
-
+            
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
                 Console.WriteLine("An error occurred communicating with the server.");
-
+                
                 return null;
             }
             else if (!response.IsSuccessful)
@@ -85,9 +88,13 @@ namespace TenmoClient
             else
             {
                 client.Authenticator = new JwtAuthenticator(response.Data.Token);
-
+                Token = response.Data.Token;
+                
                 return response.Data;
             }
         }
     }
 }
+
+
+

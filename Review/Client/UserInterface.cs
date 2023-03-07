@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Client.APIClients;
+using Client.Models;
+using System;
+using System.Collections.Generic;
 using TenmoClient.Data;
 
 namespace TenmoClient
@@ -7,6 +10,7 @@ namespace TenmoClient
     {
         private readonly ConsoleService consoleService = new ConsoleService();
         private readonly AuthService authService = new AuthService();
+        private readonly CityApiService cityService = new CityApiService("https://localhost:44315/");
 
         private bool quitRequested = false;
 
@@ -72,11 +76,33 @@ namespace TenmoClient
                     switch (menuSelection)
                     {
                         case 1: // View All Cities
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
+                            List<City> allCities = cityService.GetAllCities();
+                            foreach(City c in allCities)
+                            {
+                                Console.WriteLine($"{c.Name}");
+                            }
                             break;
 
                         case 2: // Add a New City
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
+                            City newCity = new City();
+                            Console.WriteLine();
+                            Console.WriteLine("What is the name of the new city?");
+                            newCity.Name = Console.ReadLine();
+                            
+                            Console.WriteLine();
+                            Console.WriteLine("What is the state abbreviation?");
+                            newCity.StateAbbreviation = Console.ReadLine();
+
+                            Console.WriteLine();
+                            Console.WriteLine("What is the population?");
+                            newCity.Population = int.Parse(Console.ReadLine());
+
+                            Console.WriteLine();
+                            Console.WriteLine("What is the area?");
+                            newCity.Area = decimal.Parse(Console.ReadLine());
+
+                            cityService.AddCity(newCity);
+
                             break;
 
                         case 3: // Log in as someone else
