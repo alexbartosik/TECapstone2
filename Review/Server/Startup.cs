@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Server.DAO;
 using TenmoServer.DAO;
 using TenmoServer.Security;
 
@@ -46,6 +47,7 @@ namespace TenmoServer
             services.AddSingleton<ITokenGenerator>(sp => new JwtGenerator(jwtSecret));
             services.AddSingleton<IPasswordHasher>(sp => new PasswordHasher());
             services.AddSingleton<IUserDAO>(sp => new UserSqlDAO(connectionString));
+            services.AddSingleton<ICityDao>(sp => new CitySqlDao(connectionString));
         }
 
         private static void ConfigureSwagger(IServiceCollection services)
