@@ -58,5 +58,27 @@ namespace Server.DAO
 
             return cityList;
         }
+
+        public City AddCity(City city)
+        {
+            const string sql = "INSERT INTO city (city_name, state_abbreviation, population, area) " +
+                                "VALUES (@name, @stateAbbreviation, @population, @area);" +
+                                "SELECT @@IDENTITY";
+
+            using(SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@name", city.Name);
+                command.Parameters.AddWithValue("@stateAbbreviation", city.StateAbbreviation);
+                command.Parameters.AddWithValue("@population", city.Population);
+                command.Parameters.AddWithValue("@area", city.Area);
+
+                city.Id = Convert.ToInt32(command.ExecuteScalar());
+
+                return city;
+            }
+        }
     }
 }
