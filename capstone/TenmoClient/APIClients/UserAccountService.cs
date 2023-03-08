@@ -55,16 +55,25 @@ namespace TenmoClient.APIClients
             return response.Data;
         }
 
-        public void TransferTEbucks(int accountTo, decimal amountToSend) // void => Transfer obj
+        public void TransferTEbucks(Transfer transfer)
         {
-            RestRequest request = new RestRequest($"{baseUrl}account/send");
+            RestRequest request = new RestRequest($"{baseUrl}account/transfer");
 
-            IRestResponse response = client.Put(request);
+            request.AddJsonBody(transfer);
+
+            IRestResponse response = client.Post(request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
-                Console.WriteLine("An error occured communicating with the server.");
-                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                if(response.ResponseStatus == ResponseStatus.Error)
+                {
+                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                }
             }
             if (!response.IsSuccessful)
             {
