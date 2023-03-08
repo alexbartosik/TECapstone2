@@ -41,8 +41,6 @@ namespace TenmoServer.DAO
                 command.Parameters.AddWithValue("@userId", userId);
                 command.Parameters.AddWithValue("@amountToAdd", amountToAdd);
 
-                command.ExecuteNonQuery();
-
                 if (command.ExecuteNonQuery() > 0)
                 {
                     return true;
@@ -65,8 +63,6 @@ namespace TenmoServer.DAO
                 SqlCommand command = new SqlCommand(sql, conn);
                 command.Parameters.AddWithValue("@username", username);
                 command.Parameters.AddWithValue("@amountToSubtract", amountToSubtract);
-
-                command.ExecuteNonQuery();
 
                 if (command.ExecuteNonQuery() > 0)
                 {
