@@ -85,7 +85,7 @@ namespace TenmoClient
                             break;
 
                         case "4": // Send TE Bucks
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
+                            Console.WriteLine("WORKING ON IT"); // TODO: Implement me
                             break;
 
                         case "5": // Request TE Bucks

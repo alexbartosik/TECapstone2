@@ -14,7 +14,7 @@ namespace TenmoServer.DAO
 
         public decimal GetMyAccountBalance(string username)
         {
-            using(SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
 
@@ -26,6 +26,56 @@ namespace TenmoServer.DAO
                 decimal balance = Convert.ToDecimal(command.ExecuteScalar());
 
                 return balance;
+            }
+        }
+
+        public bool IncreaseAccountBalance(int userId, decimal amountToAdd)
+        {
+            using(SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string sql = "UPDATE accounts SET balance += @amountToAdd WHERE user_id = @userId";
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@amountToAdd", amountToAdd);
+
+                command.ExecuteNonQuery();
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool DecreaseAccountBalance(string username, decimal amountToSubtract)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string sql = "UPDATE accounts SET balance -= @amountToSubtract WHERE user_id = (SELECT user_id FROM users WHERE username = @username)";
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@amountToSubtract", amountToSubtract);
+
+                command.ExecuteNonQuery();
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }
