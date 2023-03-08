@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using TenmoServer.DAO;
+using TenmoServer.Models;
 
 namespace TenmoServer.Controllers
 {
@@ -10,7 +12,8 @@ namespace TenmoServer.Controllers
     [Authorize]
     public class UserAccountController : ControllerBase
     {
-        public readonly IUserAccountDAO dao;
+        private readonly IUserAccountDAO dao;
+        private readonly IUserDAO userDAO;
 
         public UserAccountController(IUserAccountDAO accountDao)
         {
@@ -23,8 +26,14 @@ namespace TenmoServer.Controllers
             return Ok(dao.GetMyAccountBalance(User.Identity.Name));
         }
 
-        [HttpPut("send")]
-        public ActionResult SendTEbucks(int accountTo, decimal amountToSend) 
+        [HttpGet("users")]
+        public ActionResult GetUsers()
+        {
+            return Ok(dao.GetUsers(User.Identity.Name));
+        }
+
+        [HttpPut("transfer")]
+        public ActionResult TransferTEbucks(int accountTo, decimal amountToSend) 
         {
             decimal currentBalance = dao.GetMyAccountBalance(User.Identity.Name);
             string username = User.Identity.Name;

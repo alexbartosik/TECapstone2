@@ -3,6 +3,7 @@ using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TenmoClient.Models;
 
 namespace TenmoClient.APIClients
 {
@@ -20,16 +21,56 @@ namespace TenmoClient.APIClients
             if(response.ResponseStatus != ResponseStatus.Completed)
             {
                 Console.WriteLine("An error occured communicating with the server.");
-                Console.WriteLine($"Status Code: {response.StatusCode} {response.StatusDescription}");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
                 return 0;
             }
             if (!response.IsSuccessful)
             {
                 Console.WriteLine("An error occured.");
-                Console.WriteLine($"Status Code: {response.StatusCode} {response.StatusDescription}");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
                 return 0;
             }
             return response.Data;
+        }
+
+        public List<User> GetUsers()
+        {
+            RestRequest request = new RestRequest($"{baseUrl}account/users");
+
+            IRestResponse<List<User>> response = client.Get<List<User>>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occured communicating with the server.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                return new List<User>();
+            }
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("An error occured.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                return new List<User>();
+            }
+
+            return response.Data;
+        }
+
+        public void TransferTEbucks(int accountTo, decimal amountToSend) // void => Transfer obj
+        {
+            RestRequest request = new RestRequest($"{baseUrl}account/send");
+
+            IRestResponse response = client.Put(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occured communicating with the server.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+            }
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("An error occured.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+            }
         }
 
         public void SetAuthenticationToken(string jwt)

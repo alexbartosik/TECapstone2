@@ -37,7 +37,7 @@ namespace TenmoServer.DAO
             return returnUser;
         }
 
-        public List<User> GetUsers(string username)
+        public List<User> GetUsers()
         {
             List<User> returnUsers = new List<User>();
 
@@ -45,8 +45,7 @@ namespace TenmoServer.DAO
             {
                 conn.Open();
 
-                SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM users WHERE username != @username", conn);
-                cmd.Parameters.AddWithValue("@username", username);
+                SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM users", conn);
                 SqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.HasRows)

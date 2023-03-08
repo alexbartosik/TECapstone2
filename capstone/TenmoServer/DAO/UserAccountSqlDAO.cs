@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Security.Cryptography.Xml;
 using TenmoServer.Models;
 
 namespace TenmoServer.DAO
@@ -73,6 +75,32 @@ namespace TenmoServer.DAO
                     return false;
                 }
             }
+        }
+
+        public List<User> GetUsers(string username)
+        {
+            List<User> returnUsers = new List<User>();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand("SELECT user_id, username FROM users WHERE username != @username", conn);
+                cmd.Parameters.AddWithValue("@username", username);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    User user = new User();
+
+                    user.Username = Convert.ToString(reader["username"]);
+                    user.UserId = Convert.ToInt32(reader["user_id"]);
+
+                    returnUsers.Add(user);
+                }
+            }
+
+            return returnUsers;
         }
     }
 }

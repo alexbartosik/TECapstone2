@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 using TenmoClient.APIClients;
 using TenmoClient.Data;
+using TenmoClient.Models;
+using System.Linq;
+using System.ComponentModel.DataAnnotations;
 
 namespace TenmoClient
 {
@@ -70,46 +75,84 @@ namespace TenmoClient
                     menuSelection = Console.ReadLine();
                     switch (menuSelection)
                     {
-                        case "1": // View Balance
-                            Console.WriteLine();
-                            string balance = accountService.GetCurrentBalance().ToString("C2");
-                            Console.WriteLine($"Your current account balance is: {balance}"); // TODO: Implement me
-                            break;
+                    case "1": // View Balance
+                        Console.WriteLine();
+                        string balance = accountService.GetCurrentBalance().ToString("C2");
+                        Console.WriteLine($"Your current account balance is: {balance}"); // TODO: Implement me
+                        break;
 
-                        case "2": // View Past Transfers
+                    case "2": // View Past Transfers
+                        Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
+                        break;
+
+                    case "3": // View Pending Requests
+                        Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
+                        break;
+
+                    case "4": // Send TE Bucks
+                        TransferMoney();
+                        break;
+
+                    case "5": // Request TE Bucks
                             Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
                             break;
 
-                        case "3": // View Pending Requests
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
-                            break;
+                    case "6": // Log in as someone else
+                        authService.ClearAuthenticator();
 
-                        case "4": // Send TE Bucks
-                            Console.WriteLine("WORKING ON IT"); // TODO: Implement me
-                            break;
+                        // NOTE: You will need to clear any stored JWTs in other API Clients
+                        Console.WriteLine("MAKE SURE YOU SET THE JWT INTO OTHER API CLIENTS HERE");
 
-                        case "5": // Request TE Bucks
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
-                            break;
+                        return; // Leaves the menu and should return as someone else
 
-                        case "6": // Log in as someone else
-                            authService.ClearAuthenticator();
+                    case "0": // Quit
+                        Console.WriteLine("Goodbye!");
+                        quitRequested = true;
+                        return;
 
-                            // NOTE: You will need to clear any stored JWTs in other API Clients
-                            Console.WriteLine("MAKE SURE YOU SET THE JWT INTO OTHER API CLIENTS HERE");
-
-                            return; // Leaves the menu and should return as someone else
-
-                        case "0": // Quit
-                            Console.WriteLine("Goodbye!");
-                            quitRequested = true;
-                            return;
-
-                        default:
-                            Console.WriteLine("That doesn't seem like a valid choice.");
-                            break;
+                    default:
+                        Console.WriteLine("That doesn't seem like a valid choice.");
+                        break;
                     }
             } while (menuSelection != "0");
+        }
+
+        private void TransferMoney()
+        {
+            List<User> users = accountService.GetUsers();
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("Users");
+            Console.WriteLine("Id".PadRight(15) + "Name");
+            Console.WriteLine("--------------------------------------");
+
+            foreach (User u in users)
+            {
+                Console.WriteLine(u.UserId.ToString().PadRight(15) + u.Username);
+            }
+            Console.WriteLine();
+            Console.WriteLine("Enter the ID of the user you are sending to (0 to cancel): ");
+            int accountToId = int.Parse(Console.ReadLine());
+
+            bool userExists = users.Any(u => u.UserId == accountToId);
+
+            if (!userExists)
+            {
+                Console.WriteLine("Please choose a valid user ID from the provided list");
+            }
+            else
+            {
+                Console.WriteLine("Enter amount to send: ");
+                decimal amountToSend = decimal.Parse(Console.ReadLine());
+
+                if (amountToSend <= 0)
+                {
+                    Console.WriteLine("Please choose an amount greater than 0");
+                }
+                else
+                {
+                    accountService.TransferTEbucks(accountToId, amountToSend);
+                }
+            }
         }
 
         private void HandleUserRegister()
