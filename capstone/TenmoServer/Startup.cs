@@ -45,6 +45,7 @@ namespace TenmoServer
             services.AddSingleton<ITokenGenerator>(sp => new JwtGenerator(jwtSecret));
             services.AddSingleton<IPasswordHasher>(sp => new PasswordHasher());
             services.AddSingleton<IUserDAO>(sp => new UserSqlDAO(connectionString));
+            services.AddSingleton<IUserAccountDAO>(sp => new UserAccountSqlDAO(connectionString));
         }
 
         private static void ConfigureSwagger(IServiceCollection services)

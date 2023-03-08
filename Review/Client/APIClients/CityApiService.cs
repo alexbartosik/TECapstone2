@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using RestSharp;
 using Client.Models;
+using RestSharp.Authenticators;
 
 namespace Client.APIClients
 {
@@ -35,12 +36,12 @@ namespace Client.APIClients
             return response.Data;
         }
 
-        public City AddCity(City city)
+        public void AddCity(City city)
         {
             RestRequest request = new RestRequest("city");
             request.AddJsonBody(city);
 
-            IRestResponse<City> response = client.Post<City>(request);
+            IRestResponse response = client.Post(request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
@@ -52,16 +53,23 @@ namespace Client.APIClients
                 {
                     Console.WriteLine($"Could not communicate with server. Check your internet connection");
                 }
-                return new City();
             }
             if (!response.IsSuccessful)
             {
                 Console.WriteLine($"Error on request. Status Code: {response.StatusCode} {response.StatusDescription}");
-                return new City();
             }
-
-            return response.Data;
         }
 
+        public void SetAuthenticationToken(string jwt)
+        {
+            if(jwt == null)
+            {
+                client.Authenticator = null;
+            }
+            else
+            {
+                client.Authenticator = new JwtAuthenticator(jwt);
+            }
+        }
     }
 }

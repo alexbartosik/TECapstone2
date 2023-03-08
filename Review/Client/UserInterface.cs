@@ -2,6 +2,7 @@
 using Client.Models;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using TenmoClient.Data;
 
 namespace TenmoClient
@@ -76,32 +77,11 @@ namespace TenmoClient
                     switch (menuSelection)
                     {
                         case 1: // View All Cities
-                            List<City> allCities = cityService.GetAllCities();
-                            foreach(City c in allCities)
-                            {
-                                Console.WriteLine($"{c.Name}");
-                            }
+                            ListCities();
                             break;
 
                         case 2: // Add a New City
-                            City newCity = new City();
-                            Console.WriteLine();
-                            Console.WriteLine("What is the name of the new city?");
-                            newCity.Name = Console.ReadLine();
-                            
-                            Console.WriteLine();
-                            Console.WriteLine("What is the state abbreviation?");
-                            newCity.StateAbbreviation = Console.ReadLine();
-
-                            Console.WriteLine();
-                            Console.WriteLine("What is the population?");
-                            newCity.Population = int.Parse(Console.ReadLine());
-
-                            Console.WriteLine();
-                            Console.WriteLine("What is the area?");
-                            newCity.Area = decimal.Parse(Console.ReadLine());
-
-                            cityService.AddCity(newCity);
+                            AddCity();
 
                             break;
 
@@ -125,6 +105,45 @@ namespace TenmoClient
                     }
                 }
             } while (menuSelection != 0);
+        }
+
+        private void ListCities()
+        {
+            List<City> allCities = cityService.GetAllCities();
+            foreach (City c in allCities)
+            {
+                Console.WriteLine($"{c.Name}, {c.StateAbbreviation}");
+            }
+        }
+
+        private void AddCity()
+        {
+            try
+            {
+                City newCity = new City();
+                Console.WriteLine();
+                Console.WriteLine("What is the name of the new city?");
+                newCity.Name = Console.ReadLine();
+
+                Console.WriteLine();
+                Console.WriteLine("What is the state abbreviation?");
+                newCity.StateAbbreviation = Console.ReadLine();
+
+                Console.WriteLine();
+                Console.WriteLine("What is the population?");
+                newCity.Population = int.Parse(Console.ReadLine());
+
+                Console.WriteLine();
+                Console.WriteLine("What is the area?");
+                newCity.Area = decimal.Parse(Console.ReadLine());
+
+                cityService.AddCity(newCity);
+                Console.WriteLine("City added");
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private void HandleUserRegister()
@@ -155,7 +174,7 @@ namespace TenmoClient
                     string jwt = authenticatedUser.Token;
 
                     // TODO: Do something with this JWT.
-                    Console.WriteLine("DOING NOTHING WITH JWT");
+                    cityService.SetAuthenticationToken(jwt);
                 }
             }
         }
