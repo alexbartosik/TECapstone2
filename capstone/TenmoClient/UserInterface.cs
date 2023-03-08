@@ -71,7 +71,8 @@ namespace TenmoClient
                     switch (menuSelection)
                     {
                         case "1": // View Balance
-                        string balance = accountService.GetCurrentBalance().ToString("C2");
+                            Console.WriteLine();
+                            string balance = accountService.GetCurrentBalance().ToString("C2");
                             Console.WriteLine($"Your current account balance is: {balance}"); // TODO: Implement me
                             break;
 
@@ -139,7 +140,7 @@ namespace TenmoClient
                     string jwt = authenticatedUser.Token;
 
                     // TODO: Do something with this JWT.
-                    Console.WriteLine("YOU'RE DOING NOTHING WITH JWT");
+                    accountService.SetAuthenticationToken(jwt);
                 }
             }
         }

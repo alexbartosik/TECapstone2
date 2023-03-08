@@ -1,4 +1,5 @@
 ﻿using RestSharp;
+using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,6 +30,18 @@ namespace TenmoClient.APIClients
                 return 0;
             }
             return response.Data;
+        }
+
+        public void SetAuthenticationToken(string jwt)
+        {
+            if(jwt == null)
+            {
+                client.Authenticator = null;
+            }
+            else
+            {
+                client.Authenticator = new JwtAuthenticator(jwt);
+            }
         }
     }
 }
