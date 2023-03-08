@@ -6,6 +6,7 @@ using TenmoClient.Data;
 using TenmoClient.Models;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 namespace TenmoClient
 {
@@ -150,7 +151,11 @@ namespace TenmoClient
                 }
                 else
                 {
-                    accountService.TransferTEbucks(accountToId, amountToSend);
+                    Transfer receivedTransfer = new Transfer();
+                    receivedTransfer.AccountTo = accountToId;
+                    receivedTransfer.Amount = amountToSend;
+
+                    accountService.TransferTEbucks(receivedTransfer);
                 }
             }
         }

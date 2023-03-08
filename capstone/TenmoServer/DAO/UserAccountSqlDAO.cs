@@ -54,16 +54,16 @@ namespace TenmoServer.DAO
             }
         }
 
-        public bool DecreaseAccountBalance(string username, decimal amountToSubtract)
+        public bool DecreaseAccountBalance(int userId, decimal amountToSubtract)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
 
-                string sql = "UPDATE accounts SET balance -= @amountToSubtract WHERE user_id = (SELECT user_id FROM users WHERE username = @username)";
+                string sql = "UPDATE accounts SET balance -= @amountToSubtract WHERE user_id = @userId";
 
                 SqlCommand command = new SqlCommand(sql, conn);
-                command.Parameters.AddWithValue("@username", username);
+                command.Parameters.AddWithValue("@userId", userId);
                 command.Parameters.AddWithValue("@amountToSubtract", amountToSubtract);
 
                 if (command.ExecuteNonQuery() > 0)

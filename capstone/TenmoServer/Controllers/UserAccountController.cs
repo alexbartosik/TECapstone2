@@ -13,11 +13,12 @@ namespace TenmoServer.Controllers
     public class UserAccountController : ControllerBase
     {
         private readonly IUserAccountDAO dao;
-        private readonly IUserDAO userDAO;
+        private readonly ITransferDAO transferDao;
 
-        public UserAccountController(IUserAccountDAO accountDao)
+        public UserAccountController(IUserAccountDAO accountDao, ITransferDAO transferDAO)
         {
             this.dao = accountDao;
+            this.transferDao = transferDAO;
         }
 
         [HttpGet("balance")]
@@ -32,17 +33,20 @@ namespace TenmoServer.Controllers
             return Ok(dao.GetUsers(User.Identity.Name));
         }
 
-        [HttpPut("transfer")]
-        public ActionResult TransferTEbucks(int accountTo, decimal amountToSend) 
+        [HttpPost("transfer")]
+        public ActionResult TransferTEbucks([FromBody] Transfer transfer) 
         {
-            decimal currentBalance = dao.GetMyAccountBalance(User.Identity.Name);
-            string username = User.Identity.Name;
+            transfer.AccountFrom = int.Parse(User.FindFirst("sub").Value);
 
-            if (amountToSend < currentBalance)
+            Transfer newTransfer = transferDao.CreateTransfer(transfer);
+
+            decimal currentBalance = dao.GetMyAccountBalance(User.Identity.Name);
+
+            if (newTransfer.Amount < currentBalance)
             {
-                dao.DecreaseAccountBalance(username, amountToSend);
-                dao.IncreaseAccountBalance(accountTo, amountToSend);
-                return Ok();
+                dao.DecreaseAccountBalance(transfer.AccountFrom, newTransfer.Amount);
+                dao.IncreaseAccountBalance(newTransfer.AccountTo, newTransfer.Amount);
+                return Created($"account/transfer/{newTransfer.Id}", newTransfer);
             }
             else
             {
