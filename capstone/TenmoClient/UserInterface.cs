@@ -86,11 +86,7 @@ namespace TenmoClient
                     case "2": // View Past Transfers
                         ListAllTransfersForCurrentUser();
 
-                        Console.WriteLine("Please enter transfer ID to view details: ");
-                        int inputId = int.Parse(Console.ReadLine());
-
-                        
-
+                        ListTransferInfoById();
                         break;
 
                     case "3": // View Pending Requests
@@ -116,13 +112,49 @@ namespace TenmoClient
                         return;
 
                     default:
+                        Console.WriteLine();
                         Console.WriteLine("That doesn't seem like a valid choice.");
                         break;
                     }
             } while (menuSelection != "0");
         }
 
-        private void ListAllTransfersForCurrentUser()
+        private void ListTransferInfoById()
+        {
+            try
+            {
+                Console.WriteLine();
+                Console.WriteLine("Please enter transfer ID to view details: ");
+                int inputId = int.Parse(Console.ReadLine());
+                bool transferIsListed = ListAllTransfersForCurrentUser().Any(t => t.Id == inputId);
+
+                if (!transferIsListed)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Please choose a valid transfer ID from the provided list.");
+                }
+                else
+                {
+                    TransferRecord transfer = accountService.GetTransferById(inputId);
+                    Console.WriteLine("--------------------------------------");
+                    Console.WriteLine("Transfer Details");
+                    Console.WriteLine("--------------------------------------");
+                    Console.WriteLine("Id: " + transfer.Id);
+                    Console.WriteLine("From: " + transfer.FromName);
+                    Console.WriteLine("To: " + transfer.ToName);
+                    Console.WriteLine("Type: " + transfer.TypeId);
+                    Console.WriteLine("Status: " + transfer.StatusId);
+                    Console.WriteLine("Amount: " + transfer.Amount.ToString("C2"));
+                }
+            }
+            catch(FormatException ex)
+            {
+                Console.WriteLine();
+                Console.WriteLine("ERROR: Please provide a valid input.");
+            }
+        }
+
+        private List<TransferRecord> ListAllTransfersForCurrentUser()
         {
             List<TransferRecord> transfers = accountService.GetTransferList();
 
@@ -133,10 +165,11 @@ namespace TenmoClient
 
             foreach (TransferRecord t in transfers)
             {
-                Console.WriteLine(t.Id.ToString().PadRight(10) + (t.TransferDirection + t.Name).PadRight(25) + t.Amount.ToString("C2"));
+                Console.WriteLine(t.Id.ToString().PadRight(10) + (t.TransferDirection + t.FromName + t.ToName).PadRight(25) + t.Amount.ToString("C2"));
             }
+            return transfers;
         }
-
+       
         private void TransferMoney()
         {
             List<User> users = accountService.GetUsers();
@@ -149,6 +182,19 @@ namespace TenmoClient
             {
                 Console.WriteLine(u.UserId.ToString().PadRight(15) + u.Username);
             }
+            try
+            {
+                TransferMoneyByUserId(users);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine();
+                Console.WriteLine("ERROR: Please provide a valid input.");
+            }
+        }
+
+        private void TransferMoneyByUserId(List<User> users)
+        {
             Console.WriteLine();
             Console.WriteLine("Enter the ID of the user you are sending to (0 to cancel): ");
             int accountToId = int.Parse(Console.ReadLine());
@@ -157,7 +203,8 @@ namespace TenmoClient
 
             if (!userExists)
             {
-                Console.WriteLine("Please choose a valid user ID from the provided list");
+                Console.WriteLine();
+                Console.WriteLine("Please choose a valid user ID from the provided list.");
             }
             else
             {
@@ -166,7 +213,15 @@ namespace TenmoClient
 
                 if (amountToSend <= 0)
                 {
-                    Console.WriteLine("Please choose an amount greater than 0");
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Nice try Matt, you can't send negative money!");
+                    Console.ResetColor();
+                }
+                else if(amountToSend > accountService.GetCurrentBalance())
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Nope. You 2 broke :(");
                 }
                 else
                 {

@@ -75,5 +75,11 @@ namespace TenmoServer.Controllers
 
             return Ok(allTransfers);
         }
+
+        [HttpGet("myTransfers/{transferId}")]
+        public ActionResult GetTransferById(int transferId)
+        {
+            return Ok(transferDao.GetTransferInfo(transferId));
+        }
     }
 }
