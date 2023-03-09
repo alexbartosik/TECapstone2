@@ -113,6 +113,38 @@ namespace TenmoClient.APIClients
             return response.Data;
         }
 
+        public TransferRecord GetTransferById(int transferId)
+        {
+            RestRequest request = new RestRequest($"{baseUrl}account/myTransfers/{transferId}");
+
+            IRestResponse<TransferRecord> response = client.Get<TransferRecord>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                if (response.ResponseStatus == ResponseStatus.Error)
+                {
+                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    return new TransferRecord();
+                }
+                else
+                {
+                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    return new TransferRecord();
+                }
+            }
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("An error occured.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                return new TransferRecord();
+            }
+
+            return response.Data;
+
+        }
+
         public void SetAuthenticationToken(string jwt)
         {
             if(jwt == null)
