@@ -66,9 +66,3 @@ INSERT INTO transfer_types (transfer_type_desc) VALUES ('Request');
 INSERT INTO transfer_types (transfer_type_desc) VALUES ('Send');
 
 
-SELECT * FROM accounts WHERE username != 'random'
-SELECT user_id FROM users WHERE username = 'random'
-
-INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (1001, 2001, 4001, 4000, 50); SELECT @@IDENTITY
-
-SELECT * FROM accounts

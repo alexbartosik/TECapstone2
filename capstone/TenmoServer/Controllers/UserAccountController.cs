@@ -54,5 +54,26 @@ namespace TenmoServer.Controllers
             }
 
         }
+
+        [HttpGet("myTransfers")]
+        public ActionResult GetMyTransfers() 
+        {
+            Dictionary<Transfer, string> allTransfers = new Dictionary<Transfer, string>();
+
+            List<Transfer> fromTransfers = transferDao.ListFromTransfersByUserId(int.Parse(User.FindFirst("sub").Value));
+            List<Transfer> toTransfers = transferDao.ListToTransfersByUserId(int.Parse(User.FindFirst("sub").Value));
+
+            foreach (Transfer t in fromTransfers)
+            {
+                allTransfers[t] = "from";
+            }
+
+            foreach (Transfer t in toTransfers)
+            {
+                allTransfers[t] = "to";
+            }
+
+            return Ok(allTransfers);
+        }
     }
 }

@@ -7,6 +7,7 @@ using TenmoClient.Models;
 using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace TenmoClient
 {
@@ -79,11 +80,22 @@ namespace TenmoClient
                     case "1": // View Balance
                         Console.WriteLine();
                         string balance = accountService.GetCurrentBalance().ToString("C2");
-                        Console.WriteLine($"Your current account balance is: {balance}"); // TODO: Implement me
+                        Console.WriteLine($"Your current account balance is: {balance}");
                         break;
 
                     case "2": // View Past Transfers
-                        Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
+                        List<Transfer> transfers = accountService.GetTransferList();
+
+                        Console.WriteLine("--------------------------------------");
+                        Console.WriteLine("Transfers");
+                        Console.WriteLine("Id".PadRight(15) + "From/To");
+                        Console.WriteLine("--------------------------------------");
+
+                        foreach (Transfer t in transfers)
+                        {
+                            // to/from and name of transfers
+                            Console.WriteLine("NOT IMPLEEMENTEOENFOSHDGOSHD");
+                        }// TODO: Implement me
                         break;
 
                     case "3": // View Pending Requests
@@ -100,10 +112,7 @@ namespace TenmoClient
 
                     case "6": // Log in as someone else
                         authService.ClearAuthenticator();
-
-                        // NOTE: You will need to clear any stored JWTs in other API Clients
-                        Console.WriteLine("MAKE SURE YOU SET THE JWT INTO OTHER API CLIENTS HERE");
-
+                        accountService.ClearAuthenticator();
                         return; // Leaves the menu and should return as someone else
 
                     case "0": // Quit
