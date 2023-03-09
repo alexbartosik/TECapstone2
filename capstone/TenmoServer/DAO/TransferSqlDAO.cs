@@ -32,14 +32,14 @@ namespace TenmoServer.DAO
             }
         }
 
-        public List<Transfer> ListFromTransfersByUserId(int userId)
+        public List<TransferRecord> ListToTransfersByUserId(int userId)
         {
-            List<Transfer> transfers = new List<Transfer>();
+            List<TransferRecord> toTransfers = new List<TransferRecord>();
 
             using(SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string sql = "SELECT * FROM transfers WHERE account_from = (SELECT account_id FROM accounts WHERE user_id = @userId)";
+                string sql = "SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_to JOIN users u ON u.user_id = a.user_id WHERE account_from = (SELECT account_id FROM accounts WHERE user_id = @userId)";
 
                 SqlCommand command = new SqlCommand(sql, conn);
                 command.Parameters.AddWithValue("@userId", userId);
@@ -47,31 +47,29 @@ namespace TenmoServer.DAO
 
                 while (reader.Read())
                 {
-                    Transfer transfer = new Transfer();
+                    TransferRecord transfer = new TransferRecord();
 
                     transfer.Id = Convert.ToInt32(reader["transfer_id"]);
-                    transfer.TypeId = Convert.ToInt32(reader["transfer_type_id"]);
-                    transfer.StatusId = Convert.ToInt32(reader["transfer_status_id"]);
-                    transfer.AccountFrom = Convert.ToInt32(reader["account_from"]);
-                    transfer.AccountTo = Convert.ToInt32(reader["account_to"]);
+                    transfer.Name = Convert.ToString(reader["username"]);
+                    transfer.TransferDirection = "To: ";
                     transfer.Amount = Convert.ToDecimal(reader["amount"]);
 
-                    transfers.Add(transfer);
+                    toTransfers.Add(transfer);
                 }
 
-                return transfers;
+                return toTransfers;
             }
 
         }
 
-        public List<Transfer> ListToTransfersByUserId(int userId)
+        public List<TransferRecord> ListFromTransfersByUserId(int userId)
         {
-            List<Transfer> transfers = new List<Transfer>();
+            List<TransferRecord> fromTransfers = new List<TransferRecord>();
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string sql = "SELECT * FROM transfers WHERE account_to = (SELECT account_id FROM accounts WHERE user_id = @userId)";
+                string sql = "SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_from JOIN users u ON u.user_id = a.user_id WHERE account_to = (SELECT account_id FROM accounts WHERE user_id = @userId)";
 
                 SqlCommand command = new SqlCommand(sql, conn);
                 command.Parameters.AddWithValue("@userId", userId);
@@ -79,19 +77,17 @@ namespace TenmoServer.DAO
 
                 while (reader.Read())
                 {
-                    Transfer transfer = new Transfer();
+                    TransferRecord transfer = new TransferRecord();
 
                     transfer.Id = Convert.ToInt32(reader["transfer_id"]);
-                    transfer.TypeId = Convert.ToInt32(reader["transfer_type_id"]);
-                    transfer.StatusId = Convert.ToInt32(reader["transfer_status_id"]);
-                    transfer.AccountFrom = Convert.ToInt32(reader["account_from"]);
-                    transfer.AccountTo = Convert.ToInt32(reader["account_to"]);
+                    transfer.Name = Convert.ToString(reader["username"]);
+                    transfer.TransferDirection = "From: ";
                     transfer.Amount = Convert.ToDecimal(reader["amount"]);
 
-                    transfers.Add(transfer);
+                    fromTransfers.Add(transfer);
                 }
 
-                return transfers;
+                return fromTransfers;
             }
         }
     }

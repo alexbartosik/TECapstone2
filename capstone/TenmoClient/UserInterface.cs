@@ -84,18 +84,13 @@ namespace TenmoClient
                         break;
 
                     case "2": // View Past Transfers
-                        List<Transfer> transfers = accountService.GetTransferList();
+                        ListAllTransfersForCurrentUser();
 
-                        Console.WriteLine("--------------------------------------");
-                        Console.WriteLine("Transfers");
-                        Console.WriteLine("Id".PadRight(15) + "From/To");
-                        Console.WriteLine("--------------------------------------");
+                        Console.WriteLine("Please enter transfer ID to view details: ");
+                        int inputId = int.Parse(Console.ReadLine());
 
-                        foreach (Transfer t in transfers)
-                        {
-                            // to/from and name of transfers
-                            Console.WriteLine("NOT IMPLEEMENTEOENFOSHDGOSHD");
-                        }// TODO: Implement me
+                        
+
                         break;
 
                     case "3": // View Pending Requests
@@ -125,6 +120,21 @@ namespace TenmoClient
                         break;
                     }
             } while (menuSelection != "0");
+        }
+
+        private void ListAllTransfersForCurrentUser()
+        {
+            List<TransferRecord> transfers = accountService.GetTransferList();
+
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("Transfers");
+            Console.WriteLine("Id".PadRight(10) + "From/To".PadRight(25) + "Amount");
+            Console.WriteLine("--------------------------------------");
+
+            foreach (TransferRecord t in transfers)
+            {
+                Console.WriteLine(t.Id.ToString().PadRight(10) + (t.TransferDirection + t.Name).PadRight(25) + t.Amount.ToString("C2"));
+            }
         }
 
         private void TransferMoney()

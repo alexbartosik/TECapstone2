@@ -8,3 +8,6 @@ SELECT * FROM transfers
 
 SELECT * FROM transfers WHERE account_from = (SELECT account_id FROM accounts WHERE user_id = 3000) OR account_to = (SELECT account_id FROM accounts WHERE user_id = 3000)
 
+SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_to JOIN users u ON u.user_id = a.user_id WHERE account_from = (SELECT account_id FROM accounts WHERE user_id = @userId)
+
+SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_from JOIN users u ON u.user_id = a.user_id WHERE account_to = (SELECT account_id FROM accounts WHERE user_id = 3000)

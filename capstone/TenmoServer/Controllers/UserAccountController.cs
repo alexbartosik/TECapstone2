@@ -58,19 +58,19 @@ namespace TenmoServer.Controllers
         [HttpGet("myTransfers")]
         public ActionResult GetMyTransfers() 
         {
-            Dictionary<Transfer, string> allTransfers = new Dictionary<Transfer, string>();
+            List<TransferRecord> allTransfers = new List<TransferRecord>();
 
-            List<Transfer> fromTransfers = transferDao.ListFromTransfersByUserId(int.Parse(User.FindFirst("sub").Value));
-            List<Transfer> toTransfers = transferDao.ListToTransfersByUserId(int.Parse(User.FindFirst("sub").Value));
+            List<TransferRecord> toTransfers = transferDao.ListToTransfersByUserId(int.Parse(User.FindFirst("sub").Value));
+            List<TransferRecord> fromTransfers = transferDao.ListFromTransfersByUserId(int.Parse(User.FindFirst("sub").Value));
 
-            foreach (Transfer t in fromTransfers)
+            foreach (TransferRecord t in fromTransfers)
             {
-                allTransfers[t] = "from";
+                allTransfers.Add(t);
             }
 
-            foreach (Transfer t in toTransfers)
+            foreach (TransferRecord t in toTransfers)
             {
-                allTransfers[t] = "to";
+                allTransfers.Add(t);
             }
 
             return Ok(allTransfers);
