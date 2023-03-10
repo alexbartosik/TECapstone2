@@ -11,5 +11,7 @@ namespace TenmoServer.DAO
         List<TransferRecord> ListToTransfersByUserId(int userId);
         List<TransferRecord> ListPendingTransfersByUserId(int userId);
         TransferRecord GetTransferInfo(int transferId);
+        bool SetTransferToRejected(int transferId);
+        TransferRecord SetTransferToApproved(int transferId);
     }
 }

@@ -9,5 +9,6 @@ namespace TenmoServer.DAO
         bool IncreaseAccountBalance(int userId, decimal amountToAdd);
         bool DecreaseAccountBalance(int userId, decimal amountToSubtract);
         List<User> GetUsers(string username);
+        int GetUserIdByUsername(string username);
     }
 }

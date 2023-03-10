@@ -102,5 +102,22 @@ namespace TenmoServer.DAO
 
             return returnUsers;
         }
+
+        public int GetUserIdByUsername(string username)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string sql = "SELECT user_id FROM users WHERE username = @username";
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@username", username);
+
+                int userId = Convert.ToInt32(command.ExecuteScalar());
+
+                return userId;
+            }
+        }
     }
 }

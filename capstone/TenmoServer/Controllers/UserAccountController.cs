@@ -110,5 +110,39 @@ namespace TenmoServer.Controllers
         {
             return Ok(transferDao.ListPendingTransfersByUserId(int.Parse(User.FindFirst("sub").Value)));
         }
+
+        [HttpPut("reject")]
+        public ActionResult RejectTransfer([FromBody] int transferId)
+        {
+            return Ok(transferDao.SetTransferToRejected(transferId));
+        }
+
+        [HttpPut("approve")]
+        public ActionResult ApproveTransfer([FromBody] Transfer transfer)
+        {
+            TransferRecord approvedTransfer = transferDao.GetTransferInfo(transfer.Id);
+            transfer.AccountFrom = int.Parse(User.FindFirst("sub").Value);
+            transfer.Amount = approvedTransfer.Amount;
+            transfer.AccountTo = dao.GetUserIdByUsername(approvedTransfer.ToName);
+
+            decimal currentBalance = dao.GetMyAccountBalance(User.Identity.Name);
+
+            List<User> users = dao.GetUsers(User.Identity.Name);
+
+            if (transfer.Amount < currentBalance && transfer.Amount > 0 && users.Any(u => u.UserId == transfer.AccountTo))
+            {
+                dao.DecreaseAccountBalance(transfer.AccountFrom, transfer.Amount);
+                dao.IncreaseAccountBalance(transfer.AccountTo, transfer.Amount);
+
+                return Ok(transferDao.SetTransferToApproved(transfer.Id));
+            }
+            else
+            {
+                return BadRequest();
+            }
+           
+
+            
+        }
     }
 }
