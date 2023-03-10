@@ -72,7 +72,7 @@ namespace TenmoServer.DAO
             using(SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string sql = "SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_to JOIN users u ON u.user_id = a.user_id WHERE account_from = (SELECT account_id FROM accounts WHERE user_id = @userId)";
+                string sql = "SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_to JOIN users u ON u.user_id = a.user_id WHERE account_from = (SELECT account_id FROM accounts WHERE user_id = @userId) AND transfer_status_id != 2000";
 
                 SqlCommand command = new SqlCommand(sql, conn);
                 command.Parameters.AddWithValue("@userId", userId);
@@ -103,7 +103,7 @@ namespace TenmoServer.DAO
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
-                string sql = "SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_from JOIN users u ON u.user_id = a.user_id WHERE account_to = (SELECT account_id FROM accounts WHERE user_id = @userId)";
+                string sql = "SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_from JOIN users u ON u.user_id = a.user_id WHERE account_to = (SELECT account_id FROM accounts WHERE user_id = @userId) AND transfer_status_id != 2000";
 
                 SqlCommand command = new SqlCommand(sql, conn);
                 command.Parameters.AddWithValue("@userId", userId);
@@ -179,6 +179,53 @@ namespace TenmoServer.DAO
                     transfer.Amount = Convert.ToDecimal(reader["amount"]);
                 }
                 return transfer;
+            }
+        }
+        public bool SetTransferToRejected(int transferId)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                const int rejectedStatusId = 2002;
+                conn.Open();
+
+                string sql = "UPDATE transfers SET transfer_status_id = @rejectedStatus WHERE transfer_id = @transferId";
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@transferId", transferId);
+                command.Parameters.AddWithValue("@rejectedStatus", rejectedStatusId);
+
+                if (command.ExecuteNonQuery() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+        }
+
+        public TransferRecord SetTransferToApproved(int transferId)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                const int sendDefaultStatusApproved = 2001;
+                conn.Open();
+
+                string sql = "UPDATE transfers SET transfer_status_id = @approvedStatus WHERE transfer_id = @transferId";
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@transferId", transferId);
+                command.Parameters.AddWithValue("@approvedStatus", sendDefaultStatusApproved);
+
+                command.ExecuteNonQuery();
+
+                TransferRecord updatedTransfer = new TransferRecord();
+
+                updatedTransfer.Id = transferId;
+
+                return updatedTransfer;
             }
         }
     }

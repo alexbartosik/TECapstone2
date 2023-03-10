@@ -204,6 +204,64 @@ namespace TenmoClient.APIClients
 
         }
 
+        public void RejectTransfer(int transferId)
+        {
+            RestRequest request = new RestRequest($"{baseUrl}account/reject");
+            request.AddJsonBody(transferId);
+
+            IRestResponse response = client.Put(request);
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                if (response.ResponseStatus == ResponseStatus.Error)
+                {
+                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                }
+            }
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("An error occured.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+            }
+        }
+
+        public void ApproveTransfer(Transfer transfer)
+        {
+            RestRequest request = new RestRequest($"{baseUrl}account/approve");
+            request.AddJsonBody(transfer);
+
+            IRestResponse<Transfer> response = client.Put<Transfer>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                if (response.ResponseStatus == ResponseStatus.Error)
+                {
+                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                }   
+            }
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("An error occured.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+            }
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Transfer Approved!");
+            Console.ResetColor();
+        }
+
         public void SetAuthenticationToken(string jwt)
         {
             if(jwt == null)

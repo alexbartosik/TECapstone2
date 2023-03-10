@@ -131,44 +131,62 @@ namespace TenmoClient
 
         private void ApproveOrRejectTransfer()
         {
-            Console.WriteLine();
-            Console.WriteLine("Please enter transfer ID to approve/reject (0 to cancel): ");
-            int transferId = int.Parse(Console.ReadLine());
-
-            if (transferId == 0)
-            {
-                return;
-            }
-
-            Console.Clear();
-            bool transferExists = ListPendingTransfers().Any(t => t.Id == transferId);
-
-            if (!transferExists)
+            try
             {
                 Console.WriteLine();
-                Console.WriteLine("Please choose a valid transfer ID from the provided list.");
-            }
-            else
-            {
-                Console.WriteLine("1: Approve");
-                Console.WriteLine("2: Reject");
-                Console.WriteLine("0: Don't approve or reject");
-                Console.WriteLine("---------------------------");
-                Console.WriteLine("Please choose an option: ");
-                int userInput = int.Parse(Console.ReadLine());
-
-                switch (userInput)
+                Console.WriteLine("Please enter transfer ID to approve/reject (0 to cancel): ");
+                int transferId = int.Parse(Console.ReadLine());
+          
+                if (transferId == 0)
                 {
-                    case 0:
-                        return;
-                    case 1:
-                        break;
-                    case 2:
-                        break;
-                    default:
-                        Console.WriteLine("NO");
-                        break;
+                    Console.Clear();
+                    return;
                 }
+
+                Console.Clear();
+                bool transferExists = ListPendingTransfers().Any(t => t.Id == transferId);
+
+                if (!transferExists)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Please choose a valid transfer ID from the provided list.");
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("1: Approve");
+                    Console.WriteLine("2: Reject");
+                    Console.WriteLine("0: Don't approve or reject");
+                    Console.WriteLine("---------------------------");
+                    Console.WriteLine("Please choose an option: ");
+                    int userInput = int.Parse(Console.ReadLine());
+
+                    switch (userInput)
+                    {
+                        case 0:
+                            return;
+                        case 1:
+                            Transfer approvedTransfer = new Transfer();
+                            approvedTransfer.Id = transferId;
+                            accountService.ApproveTransfer(approvedTransfer);
+                            break;
+                        case 2:
+                            accountService.RejectTransfer(transferId);
+                            Console.Clear();
+                            Console.WriteLine("Transfer has been rejected.");
+                            break;
+                        default:
+                            Console.WriteLine("NO");
+                            break;
+                    }
+                }
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Please choose a valid transfer ID!");
+                Console.ResetColor();
             }
         }
 
@@ -194,19 +212,24 @@ namespace TenmoClient
             try
             {
                 Console.WriteLine();
-                Console.WriteLine("Please enter transfer ID to view details: ");
+                Console.WriteLine("Please enter transfer ID to view details (0 to cancel): ");
                 int inputId = int.Parse(Console.ReadLine());
+                if(inputId == 0)
+                {
+                    Console.Clear();
+                    return;
+                }
                 Console.Clear();
                 bool transferIsListed = ListAllTransfersForCurrentUser().Any(t => t.Id == inputId);
 
                 if (!transferIsListed)
                 {
-                    Console.WriteLine();
+                    Console.Clear();
                     Console.WriteLine("Please choose a valid transfer ID from the provided list.");
                 }
                 else
                 {
-                    Console.WriteLine();
+                    Console.Clear();
                     TransferRecord transfer = accountService.GetTransferById(inputId);
                     Console.WriteLine("--------------------------------------");
                     Console.WriteLine("Transfer Details");
@@ -258,10 +281,6 @@ namespace TenmoClient
             try
             {
                 SendMoneyByUserId(users);
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("TE Bucks sent");
-                Console.ResetColor();
             }
             catch (FormatException)
             {
@@ -288,10 +307,6 @@ namespace TenmoClient
             try
             {
                 RequestMoneyByUserId(users);
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("TE Bucks requested");
-                Console.ResetColor();
             }
             catch (FormatException)
             {
@@ -335,7 +350,7 @@ namespace TenmoClient
                 else if(amountToSend > accountService.GetCurrentBalance())
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Nope. You 2 broke :(");
+                    Console.WriteLine("Nope. You're 2 broke :(");
                 }
                 else
                 {
@@ -344,6 +359,12 @@ namespace TenmoClient
                     receivedTransfer.Amount = amountToSend;
 
                     accountService.SendTEbucks(receivedTransfer);
+
+
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("TE Bucks sent");
+                    Console.ResetColor();
                 }
             }
         }
@@ -385,6 +406,11 @@ namespace TenmoClient
                     receivedTransfer.Amount = amountToRequest;
 
                     accountService.RequestTEbucks(receivedTransfer);
+
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("TE Bucks requested");
+                    Console.ResetColor();
                 }
             }
         }
