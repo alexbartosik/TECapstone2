@@ -55,6 +55,7 @@ namespace TenmoClient
                     Console.WriteLine("Invalid selection.");
                     break;
             }
+            Console.Clear();
         }
 
         private void ShowMainMenu()
@@ -78,45 +79,114 @@ namespace TenmoClient
                     switch (menuSelection)
                     {
                     case "1": // View Balance
-                        Console.WriteLine();
+                        Console.Clear();
                         string balance = accountService.GetCurrentBalance().ToString("C2");
                         Console.WriteLine($"Your current account balance is: {balance}");
+                        Console.WriteLine();
                         break;
 
                     case "2": // View Past Transfers
+                        Console.Clear();
                         ListAllTransfersForCurrentUser();
-
                         ListTransferInfoById();
                         break;
 
                     case "3": // View Pending Requests
-                        Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
+                        Console.Clear();
+                        ListPendingTransfers();
+                        ApproveOrRejectTransfer();
                         break;
 
                     case "4": // Send TE Bucks
-                        TransferMoney();
+                        Console.Clear();
+                        SendTEBucks();
                         break;
 
                     case "5": // Request TE Bucks
-                            Console.WriteLine("NOT IMPLEMENTED!"); // TODO: Implement me
-                            break;
+                        Console.Clear();
+                        RequestTEBucks();
+                        break;
 
                     case "6": // Log in as someone else
+                        Console.Clear();
                         authService.ClearAuthenticator();
                         accountService.ClearAuthenticator();
                         return; // Leaves the menu and should return as someone else
 
                     case "0": // Quit
+                        Console.Clear();
                         Console.WriteLine("Goodbye!");
                         quitRequested = true;
                         return;
 
                     default:
-                        Console.WriteLine();
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("That doesn't seem like a valid choice.");
+                        Console.ResetColor();
                         break;
                     }
             } while (menuSelection != "0");
+        }
+
+        private void ApproveOrRejectTransfer()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Please enter transfer ID to approve/reject (0 to cancel): ");
+            int transferId = int.Parse(Console.ReadLine());
+
+            if (transferId == 0)
+            {
+                return;
+            }
+
+            Console.Clear();
+            bool transferExists = ListPendingTransfers().Any(t => t.Id == transferId);
+
+            if (!transferExists)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Please choose a valid transfer ID from the provided list.");
+            }
+            else
+            {
+                Console.WriteLine("1: Approve");
+                Console.WriteLine("2: Reject");
+                Console.WriteLine("0: Don't approve or reject");
+                Console.WriteLine("---------------------------");
+                Console.WriteLine("Please choose an option: ");
+                int userInput = int.Parse(Console.ReadLine());
+
+                switch (userInput)
+                {
+                    case 0:
+                        return;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        Console.WriteLine("NO");
+                        break;
+                }
+            }
+        }
+
+        private List<TransferRecord> ListPendingTransfers()
+        {
+            List<TransferRecord> pendingTransfers = accountService.GetListOfPendingTranfers();
+
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("Pending Transfers");
+            Console.WriteLine("Id".PadRight(10) + "To".PadRight(25) + "Amount");
+            Console.WriteLine("--------------------------------------");
+
+            foreach (TransferRecord t in pendingTransfers)
+            {
+                Console.WriteLine(t.Id.ToString().PadRight(10) + (t.ToName).PadRight(25) + t.Amount.ToString("C2"));
+            }
+
+            return pendingTransfers;
         }
 
         private void ListTransferInfoById()
@@ -126,6 +196,7 @@ namespace TenmoClient
                 Console.WriteLine();
                 Console.WriteLine("Please enter transfer ID to view details: ");
                 int inputId = int.Parse(Console.ReadLine());
+                Console.Clear();
                 bool transferIsListed = ListAllTransfersForCurrentUser().Any(t => t.Id == inputId);
 
                 if (!transferIsListed)
@@ -135,6 +206,7 @@ namespace TenmoClient
                 }
                 else
                 {
+                    Console.WriteLine();
                     TransferRecord transfer = accountService.GetTransferById(inputId);
                     Console.WriteLine("--------------------------------------");
                     Console.WriteLine("Transfer Details");
@@ -170,34 +242,76 @@ namespace TenmoClient
             return transfers;
         }
        
-        private void TransferMoney()
+        private void SendTEBucks()
         {
-            List<User> users = accountService.GetUsers();
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("Users");
             Console.WriteLine("Id".PadRight(15) + "Name");
             Console.WriteLine("--------------------------------------");
+            List<User> users = accountService.GetUsers();
 
             foreach (User u in users)
             {
                 Console.WriteLine(u.UserId.ToString().PadRight(15) + u.Username);
             }
+
             try
             {
-                TransferMoneyByUserId(users);
+                SendMoneyByUserId(users);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("TE Bucks sent");
+                Console.ResetColor();
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
                 Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("ERROR: Please provide a valid input.");
+                Console.ResetColor();
             }
         }
 
-        private void TransferMoneyByUserId(List<User> users)
+        private void RequestTEBucks()
+        {
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("Users");
+            Console.WriteLine("Id".PadRight(15) + "Name");
+            Console.WriteLine("--------------------------------------");
+            List<User> users = accountService.GetUsers();
+
+            foreach (User u in users)
+            {
+                Console.WriteLine(u.UserId.ToString().PadRight(15) + u.Username);
+            }
+
+            try
+            {
+                RequestMoneyByUserId(users);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("TE Bucks requested");
+                Console.ResetColor();
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR: Please provide a valid input.");
+                Console.ResetColor();
+            }
+        }
+
+        private void SendMoneyByUserId(List<User> users)
         {
             Console.WriteLine();
             Console.WriteLine("Enter the ID of the user you are sending to (0 to cancel): ");
             int accountToId = int.Parse(Console.ReadLine());
+
+            if (accountToId == 0)
+            {
+                return;
+            }
 
             bool userExists = users.Any(u => u.UserId == accountToId);
 
@@ -229,7 +343,48 @@ namespace TenmoClient
                     receivedTransfer.AccountTo = accountToId;
                     receivedTransfer.Amount = amountToSend;
 
-                    accountService.TransferTEbucks(receivedTransfer);
+                    accountService.SendTEbucks(receivedTransfer);
+                }
+            }
+        }
+
+        private void RequestMoneyByUserId(List<User> users)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Enter the ID of the user you are requesting from (0 to cancel): ");
+            int accountFromId = int.Parse(Console.ReadLine());
+
+            if (accountFromId == 0)
+            {
+                return;
+            }
+
+            bool userExists = users.Any(u => u.UserId == accountFromId);
+
+            if (!userExists)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Please choose a valid user ID from the provided list.");
+            }
+            else
+            {
+                Console.WriteLine("Enter amount to request: ");
+                decimal amountToRequest = decimal.Parse(Console.ReadLine());
+
+                if (amountToRequest <= 0)
+                {
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Nice try Matt, just send the money instead...");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Transfer receivedTransfer = new Transfer();
+                    receivedTransfer.AccountFrom = accountFromId;
+                    receivedTransfer.Amount = amountToRequest;
+
+                    accountService.RequestTEbucks(receivedTransfer);
                 }
             }
         }

@@ -55,9 +55,9 @@ namespace TenmoClient.APIClients
             return response.Data;
         }
 
-        public void TransferTEbucks(Transfer transfer)
+        public void SendTEbucks(Transfer transfer)
         {
-            RestRequest request = new RestRequest($"{baseUrl}account/transfer");
+            RestRequest request = new RestRequest($"{baseUrl}account/send");
 
             request.AddJsonBody(transfer);
 
@@ -66,6 +66,33 @@ namespace TenmoClient.APIClients
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
                 if(response.ResponseStatus == ResponseStatus.Error)
+                {
+                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                }
+            }
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("An error occured.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+            }
+        }
+
+        public void RequestTEbucks(Transfer transfer)
+        {
+            RestRequest request = new RestRequest($"{baseUrl}account/request");
+
+            request.AddJsonBody(transfer);
+
+            IRestResponse response = client.Post(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                if (response.ResponseStatus == ResponseStatus.Error)
                 {
                     Console.WriteLine("Could not process request: " + response.ErrorMessage);
                 }
@@ -139,6 +166,38 @@ namespace TenmoClient.APIClients
                 Console.WriteLine("An error occured.");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
                 return new TransferRecord();
+            }
+
+            return response.Data;
+
+        }
+
+        public List<TransferRecord> GetListOfPendingTranfers()
+        {
+            RestRequest request = new RestRequest($"{baseUrl}account/pending");
+
+            IRestResponse<List<TransferRecord>> response = client.Get<List<TransferRecord>>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                if (response.ResponseStatus == ResponseStatus.Error)
+                {
+                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    return new List<TransferRecord>();
+                }
+                else
+                {
+                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    return new List<TransferRecord>();
+                }
+            }
+
+            if (!response.IsSuccessful)
+            {
+                Console.WriteLine("An error occured.");
+                Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                return new List<TransferRecord>();
             }
 
             return response.Data;

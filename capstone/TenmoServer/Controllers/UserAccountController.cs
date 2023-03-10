@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using TenmoServer.DAO;
 using TenmoServer.Models;
+using System.Linq;
 
 namespace TenmoServer.Controllers
 {
@@ -33,26 +34,48 @@ namespace TenmoServer.Controllers
             return Ok(dao.GetUsers(User.Identity.Name));
         }
 
-        [HttpPost("transfer")]
-        public ActionResult TransferTEbucks([FromBody] Transfer transfer) 
+        [HttpPost("send")]
+        public ActionResult SendTEbucks([FromBody] Transfer transfer) 
         {
             transfer.AccountFrom = int.Parse(User.FindFirst("sub").Value);
 
-            Transfer newTransfer = transferDao.CreateTransfer(transfer);
-
             decimal currentBalance = dao.GetMyAccountBalance(User.Identity.Name);
 
-            if (newTransfer.Amount < currentBalance)
+            List<User> users = dao.GetUsers(User.Identity.Name);
+
+            if (transfer.Amount < currentBalance && transfer.Amount > 0 && users.Any(u => u.UserId == transfer.AccountTo))
             {
+                Transfer newTransfer = transferDao.CreateSendTransfer(transfer);
+
+                //following code to be run after transfer is approved for RequestTEBucks()
                 dao.DecreaseAccountBalance(transfer.AccountFrom, newTransfer.Amount);
                 dao.IncreaseAccountBalance(newTransfer.AccountTo, newTransfer.Amount);
-                return Created($"account/transfer/{newTransfer.Id}", newTransfer);
+
+                return Created($"account/send/{newTransfer.Id}", newTransfer);
             }
             else
             {
                 return BadRequest();
             }
+        }
 
+        [HttpPost("request")]
+        public ActionResult RequestTEbucks([FromBody] Transfer transfer)
+        {
+            transfer.AccountTo = int.Parse(User.FindFirst("sub").Value);
+
+            List<User> users = dao.GetUsers(User.Identity.Name);
+
+            if (transfer.Amount > 0 && users.Any(u => u.UserId == transfer.AccountFrom))
+            {
+                Transfer newTransfer = transferDao.CreateRequestTransfer(transfer);
+
+                return Created($"account/request/{newTransfer.Id}", newTransfer);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("myTransfers")]
@@ -80,6 +103,12 @@ namespace TenmoServer.Controllers
         public ActionResult GetTransferById(int transferId)
         {
             return Ok(transferDao.GetTransferInfo(transferId));
+        }
+
+        [HttpGet("pending")]
+        public ActionResult ListPendingTransferForCurrentUser()
+        {
+            return Ok(transferDao.ListPendingTransfersByUserId(int.Parse(User.FindFirst("sub").Value)));
         }
     }
 }

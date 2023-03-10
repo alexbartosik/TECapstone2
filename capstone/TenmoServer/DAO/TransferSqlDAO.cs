@@ -15,19 +15,51 @@ namespace TenmoServer.DAO
             connectionString = dbConnectionString;
         }
 
-        public Transfer CreateTransfer(Transfer transfer)
+        public Transfer CreateSendTransfer(Transfer transfer)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
+                const int sendType = 1001;
+                const int sendDefaultStatusApproved = 2001;
+
                 conn.Open();
-                string sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (1001, 2001, (SELECT account_id FROM accounts WHERE user_id = @accountFrom), (SELECT account_id FROM accounts WHERE user_id = @accountTo), @amount); SELECT @@IDENTITY";
+                string sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (@type, @status, (SELECT account_id FROM accounts WHERE user_id = @accountFrom), (SELECT account_id FROM accounts WHERE user_id = @accountTo), @amount); SELECT @@IDENTITY";
 
                 SqlCommand command = new SqlCommand(sql, conn);
                 command.Parameters.AddWithValue("@accountFrom", transfer.AccountFrom);
                 command.Parameters.AddWithValue("@accountTo", transfer.AccountTo);
                 command.Parameters.AddWithValue("@amount", transfer.Amount);
+                command.Parameters.AddWithValue("@type", sendType);
+                command.Parameters.AddWithValue("@status", sendDefaultStatusApproved);
 
                 transfer.Id = Convert.ToInt32(command.ExecuteScalar());
+                transfer.TypeId = sendType;
+                transfer.StatusId = sendDefaultStatusApproved;
+
+                return transfer;
+            }
+        }
+
+        public Transfer CreateRequestTransfer(Transfer transfer)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                const int requestType = 1000;
+                const int requestDefaultStatusPending = 2000;
+
+                conn.Open();
+                string sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (@type, @status, (SELECT account_id FROM accounts WHERE user_id = @accountFrom), (SELECT account_id FROM accounts WHERE user_id = @accountTo), @amount); SELECT @@IDENTITY";
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@accountFrom", transfer.AccountFrom);
+                command.Parameters.AddWithValue("@accountTo", transfer.AccountTo);
+                command.Parameters.AddWithValue("@amount", transfer.Amount);
+                command.Parameters.AddWithValue("@type", requestType);
+                command.Parameters.AddWithValue("@status", requestDefaultStatusPending);
+
+                transfer.Id = Convert.ToInt32(command.ExecuteScalar());
+                transfer.TypeId = requestType;
+                transfer.StatusId = requestDefaultStatusPending;
 
                 return transfer;
             }
@@ -93,6 +125,35 @@ namespace TenmoServer.DAO
                 return fromTransfers;
             }
         }
+
+        public List<TransferRecord> ListPendingTransfersByUserId(int userId)
+        {
+            List<TransferRecord> pendingTransfers = new List<TransferRecord>();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT t.transfer_id, t.amount, u.username FROM transfers t JOIN accounts a ON a.account_id = t.account_to JOIN users u ON u.user_id = a.user_id WHERE account_from = (SELECT account_id FROM accounts WHERE user_id = @userId) AND transfer_status_id = 2000";
+
+                SqlCommand command = new SqlCommand(sql, conn);
+                command.Parameters.AddWithValue("@userId", userId);
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    TransferRecord transfer = new TransferRecord();
+
+                    transfer.Id = Convert.ToInt32(reader["transfer_id"]);
+                    transfer.ToName = Convert.ToString(reader["username"]);
+                    transfer.Amount = Convert.ToDecimal(reader["amount"]);
+
+                    pendingTransfers.Add(transfer);
+                }
+
+                return pendingTransfers;
+            }
+        }
+
         public TransferRecord GetTransferInfo(int transferId)
         {
             TransferRecord transfer = new TransferRecord();
