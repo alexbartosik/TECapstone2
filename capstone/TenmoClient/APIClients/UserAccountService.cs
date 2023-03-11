@@ -20,14 +20,18 @@ namespace TenmoClient.APIClients
 
             if(response.ResponseStatus != ResponseStatus.Completed)
             {
-                Console.WriteLine("An error occured communicating with the server.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR: Cannot communicate with the server.");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
                 return 0;
             }
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
                 return 0;
             }
             return response.Data;
@@ -41,14 +45,18 @@ namespace TenmoClient.APIClients
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
-                Console.WriteLine("An error occured communicating with the server.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR: Cannot communicate with the server.");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
                 return new List<User>();
             }
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
                 return new List<User>();
             }
 
@@ -67,18 +75,24 @@ namespace TenmoClient.APIClients
             {
                 if(response.ResponseStatus == ResponseStatus.Error)
                 {
-                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Could not process request. " + response.ErrorMessage);
+                    Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Cannot communicate with the server.");
                     Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    Console.ResetColor();
                 }
             }
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
             }
         }
 
@@ -94,18 +108,24 @@ namespace TenmoClient.APIClients
             {
                 if (response.ResponseStatus == ResponseStatus.Error)
                 {
-                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Could not process request. " + response.ErrorMessage);
+                    Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Cannot communicate with the server.");
                     Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    Console.ResetColor();
                 }
             }
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
             }
         }
 
@@ -119,21 +139,26 @@ namespace TenmoClient.APIClients
             {
                 if (response.ResponseStatus == ResponseStatus.Error)
                 {
-                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Could not process request. " + response.ErrorMessage);
+                    Console.ResetColor();
                     return new List<TransferRecord>();
                 }
                 else
                 {
-                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Cannot communicate with the server.");
                     Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    Console.ResetColor();
                     return new List<TransferRecord>();
                 }
             }
-
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
                 return new List<TransferRecord>();
             }
 
@@ -150,21 +175,26 @@ namespace TenmoClient.APIClients
             {
                 if (response.ResponseStatus == ResponseStatus.Error)
                 {
-                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Could not process request. " + response.ErrorMessage);
+                    Console.ResetColor();
                     return new TransferRecord();
                 }
                 else
                 {
-                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Cannot communicate with the server.");
                     Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    Console.ResetColor();
                     return new TransferRecord();
                 }
             }
-
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
                 return new TransferRecord();
             }
 
@@ -182,21 +212,26 @@ namespace TenmoClient.APIClients
             {
                 if (response.ResponseStatus == ResponseStatus.Error)
                 {
-                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Could not process request. " + response.ErrorMessage);
+                    Console.ResetColor();
                     return new List<TransferRecord>();
                 }
                 else
                 {
-                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Cannot communicate with the server.");
                     Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    Console.ResetColor();
                     return new List<TransferRecord>();
                 }
             }
-
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
                 return new List<TransferRecord>();
             }
 
@@ -214,19 +249,24 @@ namespace TenmoClient.APIClients
             {
                 if (response.ResponseStatus == ResponseStatus.Error)
                 {
-                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Could not process request. " + response.ErrorMessage);
+                    Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Cannot communicate with the server.");
                     Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                    Console.ResetColor();
                 }
             }
-
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
             }
         }
 
@@ -241,19 +281,24 @@ namespace TenmoClient.APIClients
             {
                 if (response.ResponseStatus == ResponseStatus.Error)
                 {
-                    Console.WriteLine("Could not process request: " + response.ErrorMessage);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Could not process request. " + response.ErrorMessage);
+                    Console.ResetColor();
                 }
                 else
                 {
-                    Console.WriteLine("An error occured communicating with the server.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Cannot communicate with the server.");
                     Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
-                }   
+                    Console.ResetColor();
+                }
             }
-
             if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error occured.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR");
                 Console.WriteLine($"Status Code: {Convert.ToInt32(response.StatusCode)} {response.StatusDescription}");
+                Console.ResetColor();
             }
 
             Console.WriteLine();

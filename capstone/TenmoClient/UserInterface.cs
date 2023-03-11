@@ -15,7 +15,6 @@ namespace TenmoClient
     {
         private readonly ConsoleService consoleService = new ConsoleService();
         private readonly AuthService authService = new AuthService();
-        //private readonly API_User user = new API_User();
         private readonly UserAccountService accountService = new UserAccountService();
 
         private bool quitRequested = false;
@@ -52,10 +51,13 @@ namespace TenmoClient
                     HandleUserRegister();
                     break;
                 default:
-                    Console.WriteLine("Invalid selection.");
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Invalid selection.");
+                    Console.WriteLine();
+                    Console.ResetColor();
                     break;
             }
-            Console.Clear();
         }
 
         private void ShowMainMenu()
@@ -149,7 +151,10 @@ namespace TenmoClient
                 if (!transferExists)
                 {
                     Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Please choose a valid transfer ID from the provided list.");
+                    Console.WriteLine();
+                    Console.ResetColor();
                 }
                 else
                 {
@@ -176,7 +181,11 @@ namespace TenmoClient
                             Console.WriteLine("Transfer has been rejected.");
                             break;
                         default:
-                            Console.WriteLine("NO");
+                            Console.WriteLine();
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("ERROR: Please provide a valid input.");
+                            Console.WriteLine();
+                            Console.ResetColor();
                             break;
                     }
                 }
@@ -225,7 +234,10 @@ namespace TenmoClient
                 if (!transferIsListed)
                 {
                     Console.Clear();
-                    Console.WriteLine("Please choose a valid transfer ID from the provided list.");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Please choose a valid transfer ID from the provided list.");
+                    Console.WriteLine();
+                    Console.ResetColor();
                 }
                 else
                 {
@@ -245,7 +257,9 @@ namespace TenmoClient
             catch(FormatException ex)
             {
                 Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("ERROR: Please provide a valid input.");
+                Console.ResetColor();
             }
         }
 
@@ -333,7 +347,9 @@ namespace TenmoClient
             if (!userExists)
             {
                 Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Please choose a valid user ID from the provided list.");
+                Console.ResetColor();
             }
             else
             {
@@ -344,13 +360,15 @@ namespace TenmoClient
                 {
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Nice try Matt, you can't send negative money!");
+                    Console.WriteLine("ERROR: Nice try Matt, you can't send negative money!");
                     Console.ResetColor();
                 }
                 else if(amountToSend > accountService.GetCurrentBalance())
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Nope. You're 2 broke :(");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("ERROR: Nope. You're 2 broke :(");
+                    Console.ResetColor();
                 }
                 else
                 {
@@ -385,7 +403,9 @@ namespace TenmoClient
             if (!userExists)
             {
                 Console.WriteLine();
-                Console.WriteLine("Please choose a valid user ID from the provided list.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("ERROR: Please choose a valid user ID from the provided list.");
+                Console.ResetColor();
             }
             else
             {
@@ -396,7 +416,7 @@ namespace TenmoClient
                 {
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Nice try Matt, just send the money instead...");
+                    Console.WriteLine("ERROR: Nice try Matt, just send the money instead...");
                     Console.ResetColor();
                 }
                 else
@@ -424,9 +444,11 @@ namespace TenmoClient
                 LoginUser registerUser = consoleService.PromptForLogin();
                 isRegistered = authService.Register(registerUser);
             }
-
-            Console.WriteLine();
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Registration successful. You can now log in.");
+            Console.WriteLine();
+            Console.ResetColor();
         }
 
         private void HandleUserLogin()

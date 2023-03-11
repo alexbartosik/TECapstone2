@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TenmoServer.DAO;
 using TenmoServer.Models;
 using System.Linq;
+using System;
 
 namespace TenmoServer.Controllers
 {
@@ -55,7 +56,9 @@ namespace TenmoServer.Controllers
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 return BadRequest();
+                Console.ResetColor();
             }
         }
 
@@ -74,7 +77,9 @@ namespace TenmoServer.Controllers
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 return BadRequest();
+                Console.ResetColor();
             }
         }
 
@@ -138,7 +143,9 @@ namespace TenmoServer.Controllers
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 return BadRequest();
+                Console.ResetColor();
             }
            
 
